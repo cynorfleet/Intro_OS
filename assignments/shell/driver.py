@@ -8,6 +8,15 @@ import os
 LOOP_STATUS_GO = 1
 LOOP_STATUS_STOP = 0
 
+def List_Dir(cmd_parsed):
+    dirlist = os.listdir( cmd_parsed[1] )
+
+    # print list of files and directories
+    print 'The listing for specified directory is: \n'
+    for file in dirlist:
+        print file
+    return
+
 def Parse_Cmd(string):
 #   split the cmd and return array
     return str.split(string)
@@ -15,11 +24,13 @@ def Parse_Cmd(string):
 def Run_Cmd(cmd_parsed):
 #   make a child process
     pid = os.fork()
-
     if pid == 0:
         #   if self is a child process
         #   runs the specified cmd
-        os.execvp(cmd_parsed[0], cmd_parsed)
+        if cmd_parsed[0] == 'ls':
+            List_Dir(cmd_parsed)
+        else:
+            os.execvp(cmd_parsed[0], cmd_parsed)
     elif pid > 0:
         #   if self is parent process
         while True:
@@ -35,7 +46,7 @@ def shell_loop():
 
     while status == LOOP_STATUS_GO:
         #   Display a cmd
-        sys.stdout.write(':> ')
+        sys.stdout.write('BAD A$$ SHELL:> ')
         sys.stdout.flush()
 
         #   Get user command
