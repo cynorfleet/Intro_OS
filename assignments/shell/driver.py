@@ -2,6 +2,7 @@
 
 import sys
 import os
+import re
 
 
 #   Loop flags
@@ -18,7 +19,13 @@ def List_Dir(cmd_parsed):
     return
 
 def Parse_Cmd(string):
+    searchObj = re.findall(r'(-[lsh]+)+', string)
 #   split the cmd and return array
+#    searchObj = re.split(r'(-[lsh]+)+', string, re.I)
+    if searchObj:
+        print "searchObj = ", searchObj.group
+    else:
+        print "Nothing!!!"
     return str.split(string)
 
 def Run_Cmd(cmd_parsed):
