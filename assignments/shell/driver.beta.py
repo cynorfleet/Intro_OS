@@ -39,7 +39,7 @@ class CMD:
     #   **DEBUG**
         print ('Target = {}'.format(self.target))
     #   validate the command
-        self.Validate()
+    #    self.Validate()
         return
 
     def _isPiped(self):
@@ -78,7 +78,19 @@ class CMD:
 
 #==========================================================================
 
-#   Loop flags
+def ParseOpt():
+    parser = optparse.OptionParser('usage %prog -d [string]<domain>'
+            ' -n [int](number of links) -l [bool](show list)',
+            version="%prog 1.0")
+    parser.add_option('-d', dest='domain', type='string', default=None,
+            help='<string>specifies the domain (web address) of the site')
+    parser.add_option('-n', dest='numsites', type='int', default='1',
+            help='<int>specify the number of random links you wish to open')
+    parser.add_option('-l', '--list', action='store_true',
+            dest='islist', default=False, help='<bool>')
+
+    return parser.parse_args()#   Loop flags
+
 LOOP_STATUS_GO = 1
 LOOP_STATUS_STOP = 0
 
@@ -87,6 +99,9 @@ def List_Dir(cmd):
     # if no target make current dir default target
     if len(cmd.target) == 0:
         dirlist = os.listdir('.')
+    if any('>' in item for s, opt in enumerate(cmd.options)):
+        print ("its here")
+
     # if index 1 is an option param
     elif len(cmd.options) > 0:
         dirlist = os.listdir( cmd.target[0] )
