@@ -4,18 +4,33 @@ import sys
 import os
 import re
 
+class CommandStat:
+    cmd = ''
+    option = {[]}
+    optcount = 0
+    fields = 0
+
+    def ToString(self):
+        return 'command = {}\noption = {}\nfields = {}\noption_flag = {}'.format(cmd,option,fields,option_flag)
+        
 
 #   Loop flags
 LOOP_STATUS_GO = 1
 LOOP_STATUS_STOP = 0
+CmdConfig = CommandStat()
 
 def List_Dir(cmd_parsed):
-    dirlist = os.listdir( cmd_parsed[1] )
+    # if index 1 is an option param
+    if re.findall(r'(-[lsh]+)+', cmd_parsed[1]):
+        dirlist = os.listdir( cmd_parsed[2] )
+    # if no option params
+    else:
+        dirlist = os.listdir( cmd_parsed[1] )
 
     # print list of files and directories
-    print 'The listing for specified directory is: \n'
+    print ("\nThe listing for specified directory is: ")
     for file in dirlist:
-        print file
+        print (file)
     return
 
 def Parse_Cmd(string):
@@ -23,10 +38,17 @@ def Parse_Cmd(string):
 #   split the cmd and return array
 #    searchObj = re.split(r'(-[lsh]+)+', string, re.I)
     if searchObj:
-        print "searchObj = ", searchObj.group
+        print ('\nOption Params = {}' .format(searchObj))
+        for option in searchObj:
+            CmdConfig.option.add(option)
+            print ('Option = {}' .format(CmdConfig.option[CmdConfig.optcount])
+            CmdConfig.optcount += 1
     else:
-        print "Nothing!!!"
-    return str.split(string)
+        print ('Nothing!!!')
+
+    string = str.split(string)
+    CmdConfig.cmd = string[0]
+    return CmdConfig
 
 def Run_Cmd(cmd_parsed):
 #   make a child process
@@ -36,8 +58,8 @@ def Run_Cmd(cmd_parsed):
         #   runs the specified cmd
         if cmd_parsed[0] == 'ls':
             List_Dir(cmd_parsed)
-        else:
-            os.execvp(cmd_parsed[0], cmd_parsed)
+        # else:
+            #os.execvp(cmd_parsed[0], cmd_parsed)
     elif pid > 0:
         #   if self is parent process
         while True:
