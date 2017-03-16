@@ -7,8 +7,8 @@ LOOP_STATUS_STOP = 0
 
 def ParseCmd(raw_cmd):
     # split the command into a list
-    parsed_cmd = raw_cmd.split()
-
+    print(type(raw_cmd))
+    print("String {}".format(raw_cmd))
     # Define the options/args
     parser = optparse.OptionParser('usage %prog -a<bool> list all show hidden'+\
             'files -l<bool>long listing -h<bool> human readable sizes',
@@ -20,20 +20,22 @@ def ParseCmd(raw_cmd):
             default=False, help='<bool> long listing')
     parser.add_option('-r', '-R', '--readable', dest='isRead', action='store_true',
             default=False, help='<bool> show human readable sizes')
-    # parser.add_option('>', dest='toFile', action='store_true',
-    #         default=False, help='<bool> sends output to file')
+    parser.add_option('>>', dest='toFile', action='store_true',
+            default=False, help='<bool> sends output to file')
     # parser.add_option('<', dest='fromFile', action='store_true',
     #         default=False, help='<bool> input is redirected from a file ')
 
-    return parser.parse_args(parsed_cmd)
+    return parser.parse_args(raw_cmd)
 
-def Run_Cmd(raw_cmd):
+def Run_Loop(raw_cmd):
 #   make a child process
     pid = os.fork()
     if pid == 0:
 #       parse the new command
-        (options, args) = ParseCmd(raw_cmd)
-        print('Options: {}\nArgs: {}\n')
+	split_cmd = raw_cmd.split()
+	print("Run_CMD String {}".format(split_cmd))
+        (options, args) = ParseCmd(split_cmd)
+        print('Options: {}\nArgs: {}\n'.format(options, args))
 
 # #      if self is a child process
 #         if options. == 'ls':
@@ -67,10 +69,10 @@ def shell_loop():
 
         #   Get user command
         raw_cmd = sys.stdin.readline()
-        command = ParseCmd(raw_cmd)
+        print("Main\nRawType: {}\nRaw Content: {}\n".format(type(raw_cmd), raw_cmd))
 
         #   Run command
-        status = Run_Cmd(command)
+        status = Run_Loop(raw_cmd)
 
 
 def main():
