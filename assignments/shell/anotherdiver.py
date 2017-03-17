@@ -5,6 +5,21 @@ import sys, os, re, optparse
 LOOP_STATUS_GO = 1
 LOOP_STATUS_STOP = 0
 
+def ToFile(args, opts, source):
+    argstop = args.index('>')
+    f = open(args[argstop+1], 'w')
+    for line in source:
+        f.write('\n'+line)
+    return source
+
+def List_Dir(args, opts):
+    output = []
+    dirlist = os.listdir(args[1])
+    for file in dirlist:
+        if re.match(r'^\..*', file):
+            del dirlist[dirlist.index(file)]
+    return dirlist
+
 def ParseCmd(raw_cmd):
     # split the command into a list
     print(type(raw_cmd))
@@ -20,8 +35,6 @@ def ParseCmd(raw_cmd):
             default=False, help='<bool> long listing')
     parser.add_option('-r', '-R', '--readable', dest='isRead', action='store_true',
             default=False, help='<bool> show human readable sizes')
-    parser.add_option('>>', dest='toFile', action='store_true',
-            default=False, help='<bool> sends output to file')
     # parser.add_option('<', dest='fromFile', action='store_true',
     #         default=False, help='<bool> input is redirected from a file ')
 
@@ -37,10 +50,14 @@ def Run_Loop(raw_cmd):
         (options, args) = ParseCmd(split_cmd)
         print('Options: {}\nArgs: {}\n'.format(options, args))
 
-# #      if self is a child process
-#         if options. == 'ls':
-# #           runs the specified cmd
-#             ary = List_Dir(command)
+#      if self is a child process
+        if args[0] == 'ls':
+#           runs the specified cmd
+            dirlist = List_Dir(args, options)
+            if any('>' in s for s in args):
+                ToFile(args, options, dirlist)
+            else:
+                print("Listing:\n{}".format(dirlist))
 #             for i in ary:
 #                 print (i)
 #         elif command.cmd == 'mkdir':
