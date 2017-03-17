@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys, os, re, optparse
+from os import path
 
 LOOP_STATUS_GO = 1
 LOOP_STATUS_STOP = 0
@@ -15,9 +16,26 @@ def ToFile(args, opts, source):
 def List_Dir(args, opts):
     output = []
     dirlist = os.listdir(args[1])
-    for file in dirlist:
-        if re.match(r'^\..*', file):
-            del dirlist[dirlist.index(file)]
+
+    if opts.isAll == False:
+        for file in dirlist:
+            if re.match(r'^\..*', file):
+                del dirlist[dirlist.index(file)]
+
+    if opts.isLong == True:
+        parent = path.abspath(args[1])
+        for file in dirlist:
+            listindex = dirlist.index(file)
+            dirlist[listindex] = parent + file
+
+    if opts.isRead == True:
+        for file in dirlist:
+            listindex = dirlist.index(file)
+            filesize = path.getsize(file) / 1024.0
+            print('{:<20}{:>30.2f} kb'.format(file, filesize))
+            dirlist[listindex] = filesize
+
+    print("answer:\n".format(dirlist))
     return dirlist
 
 def ParseCmd(raw_cmd):
